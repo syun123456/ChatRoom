@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>首頁</title>
+</head>
+<body>
+
+<h2><img th:src="@{/img/} + ${session.loginUser.getUsername()} + '/avatar.jpg'" width="40px" height="40px" style="border-radius:50%"> [[${session.loginUser.getUsername()}]] 歡迎</h2>
+<a th:href="@{/chatroom/add}">建立聊天室</a></br>
+<a th:href="@{/chatroom/list}">加入聊天室</a></br>
+<a th:href="@{/chatroom/inviteInfo}">查看聊天邀請</a></br>
+<a th:href="@{/friend/list}">好友名單</a></br>
+<a th:href="@{/friend/request}">查看好友邀請</a></br>
+<a th:href="@{/user/update}">帳號修改</a></br>
+<a th:href="@{/user/avatar}">頭貼設定</a></br>
+<a th:href="@{/logout}">登出</a>
+
+</body>
+</html>

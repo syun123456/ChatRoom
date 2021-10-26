@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syun.dao.UserMapper">
+
+  <select id="queryUserList" resultType="User">
+     select id, trim(username) as username, trim(password) as password, gender, birth, 
+		trim(phone) as phone, trim(address) as address, trim(email) as email from p1_user
+  </select>
+
+  <select id="searchUser" parameterType="String" resultType="String">
+     select trim(username) as username from p1_user where username like #{username} and username != 'admin'
+  </select>
+  
+  <select id="queryUserById" parameterType="int" resultType="User">
+    select id, trim(username) as username, trim(password) as password, gender, birth, 
+		trim(phone) as phone, trim(address) as address, trim(email) as email from p1_user where id = #{id}
+  </select>
+
+  <select id="queryUserByUsername" parameterType="String" resultType="User">
+    select id, trim(username) as username, trim(password) as password, gender, birth, 
+		trim(phone) as phone, trim(address) as address, trim(email) as email from p1_user where username = #{username}
+  </select>
+  
+  <insert id="addUser" parameterType="User">
+  	insert into p1_user (username,password,gender,birth,phone,address,email) 
+		values (#{username},#{password},#{gender},#{birth},#{phone},#{address},#{email})
+  </insert>
+  
+  <update id="updateUser" parameterType="User">
+  	update p1_user set username=#{username}, password=#{password}, gender=#{gender}, birth=#{birth}, phone=#{phone}, address=#{address}, email=#{email} where id=#{id}
+  </update>
+  
+  <delete id="deleteUser" parameterType="int">
+  	delete from p1_user where id = #{id}
+  </delete>
+  
+  
+</mapper>

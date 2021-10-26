@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+<title>帳號修改</title>
+</head>
+
+<body>
+
+<div>
+	<div class="col-md-4 col-md-offset-5" style="margin: auto; width: 300px; text-align:center">
+		<h2>帳號修改</h2>
+		<form th:action="@{/user/update}" method="post">
+		  <input type="hidden" name="id" th:value="${user.getId()}" required/>
+		  <div class="form-group" style="text-align:left">
+		  	<label>帳號：</label><input class="form-control" type="text" id="username" name="username" th:value="${user.getUsername()}" readonly/><span id="userInfo"></span>
+		  </div>
+		  <div class="form-group" style="text-align:left">
+		  	<label>密碼：</label><input class="form-control" type="password" id="password" name="password" th:value="${user.getPassword()}" required/>
+		  </div>
+		  <div class="form-check" style="text-align:left; padding:10px">
+		  	<label>性別：</label>
+			<input type="radio" id="gender" name="gender" value="1" th:checked='${user.getGender()=="1"}'/><label>男</label>     
+			<input type="radio" id="gender" name="gender" value="0" th:checked='${user.getGender()=="0"}'/><label>女</label>
+		  </div>
+		  <div class="form-group" style="text-align:left">
+		  	<label>生日：</label><input class="form-control" type="date" id="birth" name="birth" th:value="${#dates.format(user.getBirth(), 'yyyy-MM-dd')}"/>
+		  </div>
+		  <div class="form-group" style="text-align:left">
+		  	<label>電話：</label><input class="form-control" type="text" id="phone" name="phone" th:value="${user.getPhone()}"/>
+		  </div>
+		  <div class="form-group" style="text-align:left">
+		  	<label>地址：</label><input class="form-control" type="text" id="address" name="address" th:value="${user.getAddress()}"/>
+		  </div>
+		  <div class="form-group" style="text-align:left">
+		  	<label>信箱：</label><input class="form-control" type="email" id="email" name="email" th:value="${user.getEmail()}"/>
+		  </div>
+		  <div style="padding-top:10px">
+		  	<button type="submit" class="btn btn-primary">送出</button>
+		  </div>
+		</form>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+</body>
+</html>

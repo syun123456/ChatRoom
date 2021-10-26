@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+	<title>建立聊天室</title>
+	<script th:src="@{/js/jQuery.js}"></script>
+	<script>
+		// 如房間勾選為私人則顯示要設定密碼
+		$(document).ready(function(){
+			$('input:radio').change(function(){
+				if(this.value === 'private'){
+					var html = '<div id="pwdDiv" class="form-group" style="text-align:left">' + 
+					'<label>密碼：</label><input class="form-control" type="password" id="chatroomPassword" name="chatroomPassword" placeholder="必填" required/>' +
+					'</div>';
+		
+					$("#chatroomTypeDiv").append(html);
+				}else if(this.value === 'public'){
+					$('#pwdDiv').remove();
+				}
+			});
+		});
+		
+		// 判斷房名是否重複
+		function isExist(){
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:8080/chatroom/add/ajax", 
+				data: {"chatroomName": $("#chatroomName").val()},
+				dataType: 'html', 
+				success: function(data){ 
+					if(data != null){
+						$("#chatroomInfo").css("color","red");
+					}
+					$("#chatroomInfo").html(data);
+					$("#msg").remove();
+				},
+			});
+		}
+	</script>
+</head>
+<body>
+
+<div>
+	<div class="col-md-4 col-md-offset-5" style="margin: auto; width: 300px; text-align:center">
+		<h2>建立聊天室</h2>
+		<form th:action="@{/chatroom/add}" method="post" target="_blank">
+		  <div class="form-group" style="text-align:left">
+		  	<label>房名：</label><input class="form-control" type="text" id="chatroomName" name="chatroomName" placeholder="必填" onblur="isExist()" required/><span id="chatroomInfo"></span>
+		  </div>
+		  <div id="chatroomTypeDiv" class="form-check" style="text-align:left; padding:10px">
+		  	<label>類型：</label>
+			<input type="radio" id="chatroomType" name="chatroomType" value="public" checked='checked'/>  <label>公開</label>     
+			<input type="radio" id="chatroomType" name="chatroomType" value="private"/>  <label>私人</label>
+		  </div>
+		  <div style="padding-top:10px; padding-bottom:10px">
+		 	<span id="msg" style="color: red" th:if="${not #strings.isEmpty(msg)}">[[${msg}]]</span></br>
+		  	<button type="submit" class="btn btn-primary">建立</button>
+		  </div>
+		</form>
+		<button type="submit" class="btn btn-primary" onclick="location.href='http://localhost:8080/user/main'">回首頁</button>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+</body>
+</html>

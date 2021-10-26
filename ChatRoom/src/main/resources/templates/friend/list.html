@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>好友名單</title>
+
+<script th:src="@{/js/jQuery.js}"></script>
+<script>
+		function searchUser(){
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:8080//friend/search", 
+				data: {"receiver": $("#receiver").val()},
+				dataType: 'json', 
+				success: function(data){
+					var html = '';
+					
+					if(data.length === 0){
+						$("#divSearchUser").empty();
+						$("#divSearchUser").removeAttr('style');
+					}else{
+						for(let i = 0; i < data.length; i++){
+							html = html + '<span>'+ data[i] +'</span></br>';
+						}
+						$("#divSearchUser").html(html);
+						$("#divSearchUser").css({"width":"176px", "height":"60px", "border": "1px solid", "overflow": "auto"});
+					}
+				}
+			});
+		}
+</script>
+
+</head>
+<body>
+	
+	<div>
+		<h2>好友名單</h2><input type="button" value="回首頁" onclick="location.href='http://localhost:8080/login'">
+	</div>
+	
+	<div style="width:300px; height:150px">
+		<span th:text="${msg}"></span>
+		<form th:action="@{/friend/sendRequest}" method="post">
+			<input type="text" id="receiver" name="receiver" placeholder="請輸入好友名稱" onkeyup="searchUser()" style="width:170px">
+			<input type="submit" value="送出申請">
+		</form>
+		<div id="divSearchUser">
+			
+		</div>
+	</div>
+	<hr>
+	<div>
+		<p>共有[[${friendList.size()}]]位好友</p>
+		<table>
+		  <thead>
+		  	<tr>
+		  	  <td>帳號</td>
+		  	  <td>狀態</td>
+		  	  <td>選項</td>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="friend:${friendList}">
+		      <td th:text=${friend}></td>
+		      <td>
+		      	<span th:if="${friendStatus.get(friend) == '0'}">離線</span>
+		      	<span th:if="${friendStatus.get(friend) == '1'}">線上</span>
+		      </td>
+		      <td>
+		      	<a th:href="@{/friend/chat/}+${friend}" target="_blank">聊天</a>
+		      	<a th:href="@{/friend/remove/}+${friend}">刪除</a>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+	</div>
+	<hr>
+	<div>
+		<p>共有[[${suggestList.size()}]]位好友建議</p>
+		<table>
+		  <thead>
+		  	<tr>
+		  	  <td>帳號</td>
+		  	  <td>共同好友人數</td>
+		  	  <td>共同好友</td>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="suggest:${suggestList}">
+		      <td th:text=${suggest.key}></td>
+		      <td th:text=${suggest.value.size()}></td>
+		      <td th:text=${suggest.value}></td>
+		    </tr>
+		  </tbody>
+		</table>
+	</div>
+	
+</body>
+</html>

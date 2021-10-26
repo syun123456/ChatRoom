@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>[[${chatroomName}]] 聊天室</title>
+	<script th:src="@{/js/jQuery.js}"></script>
+	<style>
+		#divMsg{
+			width: 500px;
+			height: 500px;
+			border: 1px solid;
+			overflow: auto;
+		}
+		
+		#divUsers{
+			width: 200px;
+			height: 500px;
+			border: 1px solid;
+			overflow: auto;
+			float:left;
+			margin-left:5px;
+		}
+		
+		.chatMsg{
+			height:30px;
+			line-height:30px;
+			border-radius:10px;
+			width:fit-content;
+			width:-webkit-fit-content;
+			width:-moz-fit-content;
+			padding:2px 5px;
+			color:white;
+		}
+	</style>
+	
+	<script>
+		var tempUsers = [];
+		var id = 0;	
+	
+		window.onload = function(){
+			getMsg();
+			alive();
+		}
+		
+		function alive(){
+			setTimeout(ack, 597000);
+		}
+		
+		// 使用者發送訊息
+		function sendMsg(){
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:8080/chatroom/sendMsg",
+				data: {"chatroomName": $("#chatroomName").html(), "username": $("#username").val(), "inputMsg": $("#inputMsg").val()},
+				dataType: 'json',
+				timeout: 3000,
+				success: function(data){
+					if(data === 'OK'){
+						$("#inputMsg").val('');
+					}else{
+						alert("您已從其他裝置離開此聊天室，如有需要，請回首頁重新加入");
+					}
+				},
+				error: function(){
+					alert("訊息未成功發送，請重新嘗試");
+				}
+			});
+		}
+		
+		// 使用者讀取訊息
+		function getMsg(){
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:8080/chatroom/getMsg",
+				data: {"chatroomName": $("#chatroomName").html(), "username": $("#username").val(), "id": id},
+				dataType: 'json',
+				success: function(data){
+					var username = $("#username").val();
+					var showUser;
+					var chatMsg;
+					
+					// 判斷目前聊天室的使用者有誰
+					if(tempUsers.toString() != data.users.toString()){
+						$("#divUsername").empty(); 
+						for(let j = 0; j < data.users.length; j++){
+							showUser = "<p>" + data.users[j] + "</p>";
+							$("#divUsername").append(showUser)
+						}
+						$("#userCount").html(data.users.length);
+						tempUsers = data.users;
+					};
+
+					// 從上次讀取的訊息往下讀
+					for(let i = 0; i < data.chatMsgList.length; i++){
+						// 發送訊息的使用者
+						var usernameOfMsg = data.chatMsgList[i].username;
+						// 要讀取的訊息
+						var message = data.chatMsgList[i].message;
+						
+						if(usernameOfMsg === username){
+							chatMsg = "<div style='height:40px; margin:10px 1px'>" + 
+							"<div class='chatMsg' style='float:right; background-color:#7878FF;'>" + message + "</div></div>";
+						}else if(usernameOfMsg === "server"){
+							chatMsg = "<p>" + "<span style='color:#808080'>" + message + "</span>" + "</p>";
+						}else{
+							// 顯示其他人的頭貼
+							var avatar = "<img src='http://localhost:8080/img/" + usernameOfMsg + "/avatar.jpg'" +
+											"width='30px' height='30px' style='border-radius:50%; vertical-align:middle;' title='" + usernameOfMsg + "'>";
+							chatMsg = "<div style='height:40px; margin:10px 1px'><div style='float:left;'>" + avatar + "</div>" +
+										"<div class='chatMsg' style='margin-left:8px; float:left; background-color:#4A4A4A;'>" + message + "</div></div>";
+						}
+						$("#divMsg").append(chatMsg);
+						
+						// 將滑動卷軸置底
+						var divMsg = document.getElementById('divMsg');
+						divMsg.scrollTop = divMsg.scrollHeight;
+						
+						id++;
+					}
+					getMsg();
+				},
+			});
+		}
+		
+		// 邀請使用者
+		function invite(){
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:8080/chatroom/invite",
+				data: {"inviteUser": $("#inviteUser").val(), "chatroomName": $("#chatroomName").html(), "username": $("#username").val()},
+				dataType: 'html',
+				success: function(data){
+					if(data === 'error'){
+						console.log(data);
+						alert("您已從其他裝置離開此聊天室，如有需要，請回首頁重新加入");
+					}else{
+						$("#inviteUser").val('');
+						$("#spanInvite").empty();
+						$("#spanInvite").html(data);
+					}
+				},
+			});
+		}
+		
+		// 回應網頁是否存活
+		function ack(){
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:8080/chatroom/alive",
+				data: {"chatroomName": $("#chatroomName").html(), "username": $("#username").val(), "alive": "1"},
+				dataType: 'html',
+				timeout: 3000,
+				success: function(data){
+					if(data === 'OK'){
+						alive();
+					}else{
+						alert("您已從其他裝置離開此聊天室，如有需要，請回首頁重新加入");
+					}
+				},
+				error: function(){
+					ack();
+				},
+			});
+		}
+			
+	</script>
+</head>
+<body>
+
+<div>
+	<p>房名：<span id="chatroomName" th:text="${chatroomName}"></span></p>
+</div>
+
+<div style="float:left; width:600px; height:600px">
+	<div>
+		<div id="divMsg">
+		
+		</div>
+		<form method="post" onsubmit="sendMsg();return false;">
+			<input type="hidden" id="username" name="username" th:value="${session.loginUser.getUsername()}"/>
+			<input type="text" name="inputMsg" id="inputMsg" placeholder="請輸入："/><button type="button" id="outputMsg" onclick="sendMsg()">傳送</button>
+		</form>
+	</div>
+	<div>
+		<form id="formInvite" method="get" onsubmit="invite();return false;">
+			<input type="text" id="inviteUser" name="inviteUser" placeholder="邀請對象"/>
+			<button type="button" id="inviteBtn" onclick="invite()">邀請</button>
+			<span id='spanInvite' style="color:blue;"></span>
+		</form>
+	</div>
+	<div>
+		<form th:action="@{/chatroom/leave}" method="post">
+			<input type="hidden" id="leaveChatroom" name="leaveChatroom" th:value="${chatroomName}"/>
+			<input type="hidden" id="leaveUser" name="leaveUser" th:value="${session.loginUser.getUsername()}"/>
+			<button type="submit" id="leaveBtn">離開聊天室</button>
+		</form>
+	</div>
+</div>
+
+<div id="divUsers">
+	<div>
+		<p>房間人數：<span id="userCount"></span></p>
+	</div>
+	<div id="divUsername">
+	
+	</div>
+</div>
+
+</body>
+</html>

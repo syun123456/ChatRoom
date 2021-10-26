@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>頭貼設定</title>
+</head>
+<body>
+
+<span style="color: red" th:if="${not #strings.isEmpty(msg)}">[[${msg}]]</span>
+<form th:action="@{/user/upload}" enctype="multipart/form-data" method="post">
+	<input type="file" name="file"/></br>
+	<input type="submit" value="上傳頭貼"/>
+</form>
+
+
+</body>
+</html>

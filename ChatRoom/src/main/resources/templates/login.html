@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+<title>登入</title>
+
+</head>
+
+<body>
+
+<div>
+	<div class="col-md-4 col-md-offset-5" style="margin: auto; width: 250px; text-align:center; padding-top:150px">
+		<form th:action="@{/login}" method="post">
+			<h2>Login</h2>
+			<span style="color: red" th:if="${not #strings.isEmpty(msg)}">[[${msg}]]</span>
+			<div class="form-group" style="text-align:left">
+				<label>帳號：</label>
+				<input class="form-control" type="text" id="username" name="username" required/>
+			</div>
+			<div class="form-group" style="text-align:left">
+				<label>密碼：</label>
+				<input class="form-control" type="password" id="password" name="password" required/>
+			</div>
+			<div style="padding:10px">
+				<label>
+					<input type="checkbox" name="rememberMe" value="yes"> Remember me
+				</label>
+			</div>
+			<button type="submit" class="btn btn-primary">登入</button>
+		</form>
+		
+		<div style="padding:10px">
+			<a th:href="@{/user/add}">帳號註冊</a>
+		</div>
+	</div>
+</div>
+
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+</body>
+</html>

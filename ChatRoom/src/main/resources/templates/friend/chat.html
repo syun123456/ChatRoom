@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>[[${friendName}]]</title>
+	<script th:src="@{/js/jQuery.js}"></script>
+	<style>
+		#divChatMsg{
+			width: 500px;
+			height: 500px;
+			border: 1px solid;
+			overflow: auto;
+		}
+		
+		.chatMsg{
+			height:30px;
+			line-height:30px;
+			border-radius:10px;
+			width:fit-content;
+			width:-webkit-fit-content;
+			width:-moz-fit-content;
+			padding:2px 5px;
+			color:white;
+		}
+	</style>
+	
+</head>
+<body>
+
+<div>
+	<p>好友：<span id="friendName" th:text="${friendName}"></span></p>
+</div>
+
+<div style="float:left; width:600px; height:600px">
+	<div>
+		<div id="divChatMsg">
+		
+		</div>
+		<form method="post" onsubmit="chatSendMsg()">
+			<input type="hidden" id="chatUsername" name="chatUsername" th:value="${session.loginUser.getUsername()}"/>
+			<input type="hidden" id="chatFriend" name="chatFriend" th:value="${friendName}"/>
+			<input type="text" name="chatInputMsg" id="chatInputMsg" placeholder="請輸入："/><button type="button" onclick="chatSendMsg()">傳送</button>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+		var chatUsername = $("#chatUsername").val();
+		var chatFriend = $("#chatFriend").val();
+		var url = 'ws://localhost:8080/WebSocket/' + chatUsername + '/' + chatFriend;
+		var webSocket = new WebSocket(url);
+		var chatInputMsg;
+		
+		webSocket.onopen = function(event) {
+			onOpen(event);
+		};
+		  
+		webSocket.onerror = function(event) {
+			alert(event.data);
+		};
+		
+		webSocket.onmessage = function(event) {
+			onMessage(event)
+		};
+		
+		function onMessage(event) {
+			var onMessageArr = event.data.split(":", 2);
+			var usernameOfMsg = onMessageArr[0];
+			var message = onMessageArr[1];
+			var chatMsg;
+			
+			if(usernameOfMsg === chatUsername){
+				chatMsg = "<div style='height:40px; margin:10px 1px'>" + 
+				"<div class='chatMsg' style='float:right; background-color:#7878FF;'>" + message + "</div></div>";
+			}else{
+				var avatar = "<img src='http://localhost:8080/img/" + usernameOfMsg + "/avatar.jpg'" +
+								"width='30px' height='30px' style='border-radius:50%; vertical-align:middle;' title='" + usernameOfMsg + "'>";
+				chatMsg = "<div style='height:40px; margin:10px 1px'><div style='float:left;'>" + avatar + "</div>" +
+							"<div class='chatMsg' style='margin-left:8px; float:left; background-color:#4A4A4A;'>" + message + "</div></div>";
+			}
+			$("#divChatMsg").append(chatMsg);
+			
+			var divChatMsg = document.getElementById('divChatMsg');
+			divChatMsg.scrollTop = divChatMsg.scrollHeight;
+		}
+		
+		function onOpen(event) {
+			
+		}
+		
+		function onError(event) {
+			
+		}
+		
+		function chatSendMsg() {
+			chatInputMsg = $("#chatInputMsg").val();
+			webSocket.send(chatInputMsg);
+			$("#chatInputMsg").val('');
+			return false;
+		}
+		
+</script>
+
+</body>
+</html>

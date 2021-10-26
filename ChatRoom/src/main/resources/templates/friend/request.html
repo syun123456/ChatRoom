@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>好友邀請</title>
+</head>
+<body>
+
+	<div>
+		<h2>好友邀請</h2><input type="button" value="回首頁" onclick="location.href='http://localhost:8080/login'">
+	</div>
+	<div>
+		<p>共有[[${requestList.size()}]]個好友申請</p>
+		<table>
+		  <thead>
+		  	<tr>
+		  	  <td>帳號</td>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="request:${requestList}">
+		      <td th:text="${request}"></td>
+		      <td>
+		      	<a th:href="@{/friend/acceptRequest/}+${request}">同意</a>
+		      	<a th:href="@{/friend/rejectRequest/}+${request}">拒絕</a>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+	</div>
+
+</body>
+</html>

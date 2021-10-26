@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+	<title>使用者列表</title>
+</head>
+<body>
+
+<div class="col-md-4 col-md-offset-5" style="margin: auto; width: 1200px; text-align:center">
+	<h2>使用者列表</h2>
+	<div style="padding-bottom:10px; text-align:right">
+		<input class="btn btn-primary" type="button" value="回首頁" onclick="location.href='http://localhost:8080/login'">
+	</div>
+	<div>
+		<table class="table table-striped table-bordered">
+		  <thead>
+		    <tr>
+		      <th scope="col">id</th>
+		      <th scope="col">帳號</th>
+		      <th scope="col">性別</th>
+		      <th scope="col">生日</th>
+		      <th scope="col">電話</th>
+		      <th scope="col">地址</th>
+		      <th scope="col">信箱</th>
+		      <th scope="col">操作</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr th:each="user:${users}">
+		      <th scope="row" th:text="${user.getId()}"></th>
+		      <td th:text="${user.getUsername()}"></td>
+			  <td th:text="${user.getGender()=='0'?'女':'男'}"></td>
+			  <td th:text="${#dates.format(user.getBirth(), 'yyyy-MM-dd')}"></td>
+			  <td th:text="${user.getPhone()}"></td>
+			  <td th:text="${user.getAddress()}"></td>
+			  <td th:text="${user.getEmail()}"></td>
+			  <td>
+				  <a th:href="@{/delete/user/}+${user.getId()}">刪除</a>
+			  </td>
+		  </tbody>
+		</table>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+</body>
+</html>
